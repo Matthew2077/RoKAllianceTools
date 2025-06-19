@@ -1,6 +1,94 @@
 <?php require_once __DIR__ . '/vendor/autoload.php'; ?>
 
 <?php 
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $source = $_POST["source"]; //source = zip, per quando carichi file zip | source = csv, per quando carichi csv
+
+
+
+    switch ($source) {
+        case "zip":
+            //salvare il file in /uploads
+            //chiamata a python con: nome file
+            //return: file csv
+
+
+
+        break;
+        case "csv":
+            try {
+                if (!isset($_FILES['csv'])) {
+                    throw new Exception('Nessun file csv ricevuto');
+                }
+
+                if ($_FILES['csv']['error'] !== UPLOAD_ERR_OK) {
+                    throw new Exception('Errore nel caricamento del file. Codice errore: ' . $_FILES['csv']['error']);
+                }
+
+                $uploadDir = 'uploads/';
+                if (!file_exists($uploadDir)) {
+                    mkdir($uploadDir, 0755, true);
+                }
+
+                $fileName = basename($_FILES['csv']['name']);
+                $targetPath = $uploadDir . $fileName;
+
+                if (!move_uploaded_file($_FILES['csv']['tmp_name'], $targetPath)) {
+                    throw new Exception('Errore durante il salvataggio del file');
+                }
+
+                // Leggi e analizza il file CSV
+                $file = fopen($targetPath, 'r');
+                if (!$file) {
+                    throw new Exception("Impossibile aprire il file CSV.");
+                }
+
+                
+
+
+                //aggiungere altro codice che analizza il csv
+
+
+
+
+
+
+                $response = [
+                    //'numero_player' => $numeroPlayer,
+                ];
+
+                header('Content-Type: application/json');
+                //echo json_encode($response);
+                exit;
+
+            } catch (Exception $e) {
+                http_response_code(400);
+                header('Content-Type: application/json');
+                echo json_encode(['error' => $e->getMessage()]);
+                exit;
+            }
+
+
+
+
+
+        break;
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
