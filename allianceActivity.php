@@ -67,11 +67,11 @@
 <!--FORM PER CARICAMENTO FILE-->
         <form id="uploadForm" method="POST" enctype="multipart/form-data"> <!--form upload file-->
             <div class="mb-3"> <!--input file-->
-                <input class="form-control" type="file" name="zip" accept=".zip" id="zip" required>
+                <input class="form-control" type="file" name="csv" accept=".csv" id="csv" required>
             </div>
             <button id="uplpadfile" type="submit" class="btn btn-primary">Upload File</button>
             <div class="mt-2" id="file-info">No file</div>
-            <input type="hidden" name="source" value="zip">
+            <input type="hidden" name="source" value="csv">
         </form>
         
 
@@ -100,7 +100,7 @@
                 <div class="col-md-2">
                     <div class="data-box">
                         <h5>Total Helps</h5>
-                        <div id="total_merits">-</div>
+                        <div id="total_helps">-</div>
                     </div>
                 </div>
                 <div class="col-md-2">
@@ -112,7 +112,7 @@
                 <div class="col-md-2">
                     <div class="data-box">
                         <h5>Average helps</h5>
-                        <div id="average_merits">-</div>
+                        <div id="average_helps">-</div>
                     </div>
                 </div>
             </div>
@@ -183,28 +183,27 @@ $(document).ready(function() {
             
             success: function(response) {
             try {
-               /* const r = (typeof response === "string") ? JSON.parse(response) : response;
+                const r = (typeof response === "string") ? JSON.parse(response) : response;
+                //const r = responde;
+                console.log(response);
+                data_report = r.data_report;
+                average_helps = r.average_helps;
                 average_power = r.average_power;
-                total_players = r.total_players;
+                total_helps = r.total_helps;
                 total_power = r.total_power;
-                total_merits = r.total_merits;
-                average_merits = r.average_merits;
-                average_power = r.average_power;
-                last_update = r.last_update;
-                // Converti i dati stringificati in array di oggetti
-                const tableData = convertArrayToObjects(r.data);
+                player_count = r.player_count;
+                //const tableData = convertArrayToObjects(r.tableData);
+                tableData = r.tableData;
+                console.log(tableData)
 
-
-
-                $("#last_update").text(last_update)
-                $("#total_players").text(total_players)
+                $("#last_update").text(data_report)
+                $("#total_players").text(player_count)
                 $("#total_power").text(total_power)
-                $("#total_merits").text(total_merits)
-                $("#average_merits").text(average_merits)
                 $("#average_power").text(average_power)
+                $("#total_helps").text(total_helps)
+                $("#average_helps").text(average_helps)
                 
-
-                // i dati arrivano come array di array, vengono convertiti in array di oggetti 
+                  // i dati arrivano come array di array, vengono convertiti in array di oggetti 
                 function convertArrayToObjects(jsonString) {
                     const rawData = JSON.parse(jsonString); // parse string to array
                     const headers = rawData[0]; // first row is the header
@@ -218,7 +217,9 @@ $(document).ready(function() {
                         return obj;
                     });
                 }
-                
+
+
+
                 var dateEditor = function(cell, onRendered, success, cancel){
                 //cell - the cell component for the editable cell
                 //onRendered - function to call when the editor has been rendered
@@ -280,32 +281,17 @@ $(document).ready(function() {
                 placeholder:"No Data Available",
                 columns:[
                     {title:"id", field:"id", hozAlign:"right", width:50},
-                    {//Player general info
-                        title:"Player Info",
-                        columns:[
-                        {title:"name", field:"name", hozAlign:"right", sorter:"number", width:120, editor:"input"},
-                        {title:"power", field:"power", hozAlign:"right", width:100, editor:"input"},
-                        {title:"merits", field:"merits", hozAlign:"right", width:100, editor:"input"},
-                        ],
-                    },
-                    {//Alleanza e regno
-                        title:"Alliance and Kingdom",
-                        columns:[
-                        {title:"alliance", field:"alliance", hozAlign:"right", sorter:"number", width:120, editor:"input"},
-                        {title:"kingdom", field:"kingdom", hozAlign:"center", width:120, editor:"input"},
-                        ],
-                    },
-                    {//Army
-                        title:"Alliance and Kingdom",
-                        columns:[
-                        {title:"troops type", field:"troops_type", hozAlign:"right", sorter:"number", width:120, editor:"input"},
-                        {title:"troops tier", field:"troops_tier", hozAlign:"center", width:120, editor:"input"},
-                        ],
-                    },
+                    {title:"Name", field:"name", hozAlign:"right", sorter:"number", width:120, editor:"input"},
+                    {title:"Power", field:"power", hozAlign:"right", width:100, editor:"input"},
+                    {title:"Helps", field:"helps", hozAlign:"right", width:100, editor:"input"},
                 ],
             });
 
-*/
+
+            
+
+
+
             } catch(e) {
                 alert('Errore nel parsing JSON: ' + e.message);
                 console.error(e);
@@ -322,7 +308,7 @@ $(document).ready(function() {
     }); 
 
 // Mostra il nome del file selezionato
-$('#zip').change(function() {
+$('#csv').change(function() {
     var fileName = $(this).val().split('\\').pop();
     $('#file-info').text(fileName || 'Nessun file selezionato');
 

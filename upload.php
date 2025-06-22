@@ -44,21 +44,60 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
 
                 
+                $headers = fgetcsv($file); //get headers | id,file,name,power,helps
+                //prende gli index, nome colonne
+                //$indexId = array_search('id', $headers);
+                $indexfile = array_search('file', $headers);
+                $indexPower = array_search('power', $headers);
+                $indexHelps = array_search('helps', $headers);
+
+                //dichiara var 
+                $totalPower = 0;
+                $totalHelps = 0;
+                $rows = 0;
 
 
-                //aggiungere altro codice che analizza il csv
+                //lettura righe e calcolo totalPower e totalHelps
+                while (($row = fgetcsv($file)) !== false) {
+                    if (count($row) !== count($headers)) continue; // salta rows malformate
 
+                    $rows++;
+                    $power = (float) $row[$indexPower];
+                    $helps = (int) $row[$indexHelps];
 
+                    $totalPower += $power;
+                    $totalHelps += $helps;
 
+                    $record = array_combine($headers, $row);
+                    $records[] = $record;
+                } 
+                fclose($file);
 
+                $average_power = $totalPower / $rows;
+                $average_helps = $totalHelps / $rows; 
+                $dataReport = date('Y-m-d H:i:s', filemtime($targetPath));
+            
 
-
+                // Prepara la risposta
                 $response = [
-                    //'numero_player' => $numeroPlayer,
+                    'player_count' => $rows, //quante righe ci sono
+                    'total_power' => $totalPower,
+                    'average_power' => round($average_power, 2),
+                    'total_helps' => $totalHelps,
+                    'average_helps' => round($average_helps, 2),
+                    'data_report' => $dataReport,
+                    'tableData' => $records,
                 ];
 
+
+/*
+                $test = "ciao";
+                $response = [
+                     'debug' => $dataReptort,
+                ];
+*/
                 header('Content-Type: application/json');
-                //echo json_encode($response);
+                echo json_encode($response);
                 exit;
 
             } catch (Exception $e) {
@@ -89,7 +128,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
 
-
+/*
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         if (!isset($_FILES['csv'])) {
@@ -120,29 +159,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $header = fgetcsv($file); // intestazione
         $indexId = array_search('id', $header);
-        $indexPotere = array_search('potere', $header);
+        $indexPower = array_search('power', $header);
         $indexHelps = array_search('helps', $header);
         $indexData = array_search('data', $header); // opzionale
 
-        if ($indexId === false || $indexPotere === false || $indexHelps === false) {
-            throw new Exception('Colonne richieste mancanti: assicurati che esistano "id", "potere" e "helps".');
+        if ($indexId === false || $indexPower === false || $indexHelps === false) {
+            throw new Exception('Colonne richieste mancanti: assicurati che esistano "id", "power" e "helps".');
         }
 
         $playerIds = [];
-        $totalePotere = 0;
-        $totaleHelps = 0;
-        $righeValide = 0;
+        $totalPower = 0;
+        $totalHelps = 0;
+        $rowsValide = 0;
         $dataReport = null;
 
         while (($row = fgetcsv($file)) !== false) {
             $id = $row[$indexId];
-            $potere = floatval($row[$indexPotere]);
+            $power = floatval($row[$indexPower]);
             $helps = floatval($row[$indexHelps]);
 
             $playerIds[$id] = true;
-            $totalePotere += $potere;
-            $totaleHelps += $helps;
-            $righeValide++;
+            $totalPower += $power;
+            $totalHelps += $helps;
+            $rowsValide++;
 
             if ($indexData !== false && !$dataReport) {
                 $dataReport = $row[$indexData];
@@ -152,14 +191,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         fclose($file);
 
         $numeroPlayer = count($playerIds);
-        $potereMedio = $numeroPlayer > 0 ? $totalePotere / $numeroPlayer : 0;
-        $helpsMedio = $numeroPlayer > 0 ? $totaleHelps / $numeroPlayer : 0;
+        $powerMedio = $numeroPlayer > 0 ? $totalPower / $numeroPlayer : 0;
+        $helpsMedio = $numeroPlayer > 0 ? $totalHelps / $numeroPlayer : 0;
 
         $response = [
             'numero_player' => $numeroPlayer,
-            'potere_totale' => $totalePotere,
-            'helps_totali' => $totaleHelps,
-            'potere_medio' => round($potereMedio, 2),
+            'power_totale' => $totalPower,
+            'helps_totali' => $totalHelps,
+            'power_medio' => round($powerMedio, 2),
             'helps_medio' => round($helpsMedio, 2),
             'data_report' => $dataReport ?? 'Non disponibile'
         ];
@@ -176,3 +215,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
+*/
